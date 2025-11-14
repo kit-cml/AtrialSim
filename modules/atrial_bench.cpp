@@ -76,12 +76,12 @@ int atrial_bench(const Parameter *p_param)
   p_cell->CONSTANTS[amp] *= stimulus_amplitude_scale;
 
   // apply user input conductance scale
-  p_cell->CONSTANTS[gKs_max] *= gks_scale;
-  p_cell->CONSTANTS[gKr_max] *= gkr_scale;
-  p_cell->CONSTANTS[gK1_max] *= gk1_scale;
-  p_cell->CONSTANTS[gto_max] *= gto_scale;
-  p_cell->CONSTANTS[gNa_max] *= gna_scale;
-  p_cell->CONSTANTS[gNaL_max] *= gnal_scale;
+  p_cell->CONSTANTS[GKs_b] *= gks_scale;
+  p_cell->CONSTANTS[GKr_b] *= gkr_scale;
+  p_cell->CONSTANTS[GK1_b] *= gk1_scale;
+  p_cell->CONSTANTS[Gto_b] *= gto_scale;
+  p_cell->CONSTANTS[GNa] *= gna_scale;
+  p_cell->CONSTANTS[GNaL_b] *= gnal_scale;
   p_cell->CONSTANTS[gNaB] *= pnab_scale;
   p_cell->CONSTANTS[gCaB] *= pcab_scale;
 
@@ -112,8 +112,8 @@ int atrial_bench(const Parameter *p_param)
   fprintf(fp_qnet,"%s,%s\n","Pace_count","Qnet");
 
   fprintf(fp_time_series,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-      "Time(ms)","Vm(mV)","dVm/dt(mV/ms)","Ca_i(mM)",
-      "INa(A_per_F)","INaL(A_per_F)","ICaL(A_per_F)",
+      "Time(ms)","Vm(mV)","dVm/dt(mV/ms)","cai(mM)",
+      "INa(A_per_F)","INaL_jn(nA_per_F)","ICaL(A_per_F)",
       "Ito(A_per_F)","IKr(A_per_F)","IKs(A_per_F)",
       "IK1(A_per_F)","Inet(A)","Inet_AUC(C)");
 
@@ -189,9 +189,9 @@ int atrial_bench(const Parameter *p_param)
       // relative time since writing began
       tprint = next_output_time - start_time;
       snprintf(buffer, sizeof(buffer),
-          "%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf\n",
-          p_cell->STATES[V], p_cell->RATES[V], p_cell->STATES[Ca_i],
-          p_cell->ALGEBRAIC[INa], p_cell->ALGEBRAIC[INaL],
+          "%.4lf,%.4lf,%.4lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+          p_cell->STATES[V], p_cell->RATES[V], p_cell->STATES[cai],
+          p_cell->ALGEBRAIC[INa], p_cell->ALGEBRAIC[INaL_jn],
           p_cell->ALGEBRAIC[ICaL], p_cell->ALGEBRAIC[Ito],
           p_cell->ALGEBRAIC[IKr], p_cell->ALGEBRAIC[IKs],
           p_cell->ALGEBRAIC[IK1], inet, inet_auc);

@@ -1,5 +1,6 @@
 *.csv
 bin/atrialsim_Grandi
+results/
 *.o
 *.log
 *.out
