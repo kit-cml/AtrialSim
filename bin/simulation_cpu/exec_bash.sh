@@ -42,7 +42,7 @@ rm -f "${PIDFILE}"
 
 sh clear_workspace.sh
 mkdir -p "${RESULT_FOLDER}"
-echo "Run $CELL_MODEL model EP simulation with $NUMBER_OF_CPU cores."
+echo "Run $CELL_MODEL model Atrial simulation with $NUMBER_OF_CPU cores."
 ( echo $$ > "${PIDFILE}"; exec mpiexec -np "${NUMBER_OF_CPU}" "${BINARY_FILE}" -input_deck param.txt >& "${RESULT_FOLDER}/logfile")
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then

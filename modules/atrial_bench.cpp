@@ -65,6 +65,7 @@ int atrial_bench(const Parameter *p_param)
   if( strstr(cell_model,"endo") != NULL ) cell_type = 0;
   else if( strstr(cell_model,"epi") != NULL ) cell_type = 1;
   else if( strstr(cell_model,"myo") != NULL ) cell_type = 2;
+  else cell_type = 9;
   mpi_printf(cml::commons::MASTER_NODE,"Using %s cell model\n", cell_model);
 
   p_cell = new grandi_2011_atrial_with_meta();
@@ -76,12 +77,13 @@ int atrial_bench(const Parameter *p_param)
   p_cell->CONSTANTS[amp] *= stimulus_amplitude_scale;
 
   // apply user input conductance scale
-  p_cell->CONSTANTS[GKs_b] *= gks_scale;
-  p_cell->CONSTANTS[GKr_b] *= gkr_scale;
-  p_cell->CONSTANTS[GK1_b] *= gk1_scale;
-  p_cell->CONSTANTS[Gto_b] *= gto_scale;
-  p_cell->CONSTANTS[GNa] *= gna_scale;
-  p_cell->CONSTANTS[GNaL_b] *= gnal_scale;
+  p_cell->CONSTANTS[gKs_jn] *= gks_scale;
+  p_cell->CONSTANTS[gKs_sl] *= gks_scale;
+  p_cell->CONSTANTS[gKr] *= gkr_scale;
+  p_cell->CONSTANTS[gK1] *= gk1_scale;
+  p_cell->CONSTANTS[gto] *= gto_scale;
+  p_cell->CONSTANTS[gNa] *= gna_scale;
+  p_cell->CONSTANTS[gNaL] *= gnal_scale;
   p_cell->CONSTANTS[gNaB] *= pnab_scale;
   p_cell->CONSTANTS[gCaB] *= pcab_scale;
 
