@@ -30,7 +30,7 @@ RESULT_FOLDER="./results"
 
 # choose the binary based on the value of cell_model
 if [[ $CELL_MODEL == *"Grandi"* ]]; then
-  BINARY_FILE=../atrialsim_Grandi
+  BINARY_FILE=atrialsim_Grandi
 #elif [[ $CELL_MODEL == *"ToR-ORd"* ]]; then
 #  BINARY_FILE=../epsim_ToR-ORd
 #elif [[ $CELL_MODEL == *"ToR-ORd-dynCl"* ]]; then
