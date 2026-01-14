@@ -114,7 +114,7 @@ int atrial_bench(const Parameter *p_param)
   fprintf(fp_qnet,"%s,%s\n","Pace_count","Qnet");
 
   fprintf(fp_time_series,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-      "Time(ms)","Vm(mV)","dVm/dt(mV/ms)","cai(mM)",
+      "Time(ms)","Vm(mV)","dVm/dt(mV/ms)","cai(nM)",
       "INa(A_per_F)","INaL_jn(nA_per_F)","ICaL(A_per_F)",
       "Ito(A_per_F)","IKr(A_per_F)","IKs(A_per_F)",
       "IK1(A_per_F)","Inet(A)","Inet_AUC(C)");
@@ -192,7 +192,7 @@ int atrial_bench(const Parameter *p_param)
       tprint = next_output_time - start_time;
       snprintf(buffer, sizeof(buffer),
           "%.4lf,%.4lf,%.4lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-          p_cell->STATES[V], p_cell->RATES[V], p_cell->STATES[cai],
+          p_cell->STATES[V], p_cell->RATES[V], p_cell->STATES[cai]*cml::math::MILLI_TO_NANO,
           p_cell->ALGEBRAIC[INa], p_cell->ALGEBRAIC[INaL_jn],
           p_cell->ALGEBRAIC[ICaL], p_cell->ALGEBRAIC[Ito],
           p_cell->ALGEBRAIC[IKr], p_cell->ALGEBRAIC[IKs],
