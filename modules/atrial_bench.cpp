@@ -54,7 +54,7 @@ int atrial_bench(const Parameter *p_param)
   else if(number_pacing_write >= number_pacing){
     number_pacing_write = number_pacing;
     mpi_printf(cml::commons::MASTER_NODE,"%s\n%s\n",
-    "WARNING!!! The number_pacing_write is larger than the number_pacing",
+    "WARNING!!! The number_pacing_write is equal to or larger than the number_pacing",
     "All period will be printed");
   }
 
@@ -113,11 +113,25 @@ int atrial_bench(const Parameter *p_param)
   }
   fprintf(fp_qnet,"%s,%s\n","Pace_count","Qnet");
 
-  fprintf(fp_time_series,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-      "Time(ms)","Vm(mV)","dVm/dt(mV/ms)","cai(nM)",
-      "INa(A_per_F)","INaL_jn(nA_per_F)","ICaL(A_per_F)",
-      "Ito(A_per_F)","IKr(A_per_F)","IKs(A_per_F)",
-      "IK1(A_per_F)","Inet(A)","Inet_AUC(C)");
+  // Write header to the time-series result file.
+  // (the main function for this task is write_csv_header )
+  static const char *time_series_headers[] = {
+    "Time(ms)", "Vm(mV)", "dVmdt(mV/ms)", "cai(nM)",
+    "INa(A_per_F)","INaL(A_per_F)","ICaL(A_per_F)",
+    "Ito(A_per_F)","IKr(A_per_F)","IKs(A_per_F)",
+    "IK1(A_per_F)","Inet(A)","Inet_AUC(C)",
+    "m(INa-activation)", "h(INa-inactivation-fast)", "j(INa-inactivation-slow)",
+    "ml(INaL-activation)", "hl(INaL-inactivation)", 
+    "x(Ito-activation)", "y(Ito-inactivation)",
+    "d(ICaL-activation)", "f(ICaL-inactivation)", 
+    "fCaB_jn(ICaL-Ca2+-dependent-inactivation-junction)", "fCaB_sl(ICaL-Ca2+-dependent-inactivation-subsarcolemmal)",
+    "xr(IKr-activation)", "xs(IKs-activation)",
+    "ikur_r(IKur-activation)", "s(IKur-inactivation)",
+    "i(Ryr-Ca2+-inactivation)", "o(Ryr-Ca2+-inactivation)","ryr_r(Ryr-Ca2+-resting)"
+  };
+  size_t n_time_series_headers =
+    sizeof(time_series_headers) / sizeof(time_series_headers[0]);
+  write_csv_header(fp_time_series, time_series_headers, n_time_series_headers);
 
   double time_step = time_step_min;
   double tcurr = 0.;
@@ -190,14 +204,26 @@ int atrial_bench(const Parameter *p_param)
     if( tcurr >= next_output_time - cml::math::EPSILON ){
       // relative time since writing began
       tprint = next_output_time - start_time;
-      snprintf(buffer, sizeof(buffer),
-          "%.4lf,%.4lf,%.4lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-          p_cell->STATES[V], p_cell->RATES[V], p_cell->STATES[cai]*cml::math::MILLI_TO_NANO,
-          p_cell->ALGEBRAIC[INa], p_cell->ALGEBRAIC[INaL_jn],
-          p_cell->ALGEBRAIC[ICaL], p_cell->ALGEBRAIC[Ito],
-          p_cell->ALGEBRAIC[IKr], p_cell->ALGEBRAIC[IKs],
-          p_cell->ALGEBRAIC[IK1], inet, inet_auc);
-      fprintf(fp_time_series, "%.4lf,%s", tprint, buffer);
+
+      // Write time-series result to the file.
+      // (the main function for this task is write_csv_time_series_row )
+      double row_values[] = {
+        tprint, p_cell->STATES[V],p_cell->RATES[V],p_cell->STATES[cai]*cml::math::MILLI_TO_NANO,
+        p_cell->ALGEBRAIC[INa], p_cell->ALGEBRAIC[INaL],
+        p_cell->ALGEBRAIC[ICaL],p_cell->ALGEBRAIC[Ito],
+        p_cell->ALGEBRAIC[IKr],p_cell->ALGEBRAIC[IKs],p_cell->ALGEBRAIC[IK1],
+        inet, inet_auc,
+        p_cell->STATES[m], p_cell->STATES[h],p_cell->STATES[j],
+        p_cell->STATES[ml],p_cell->STATES[hl],
+        p_cell->STATES[x], p_cell->STATES[y],
+        p_cell->STATES[d], p_cell->STATES[f],
+        p_cell->STATES[fCaB_jn],p_cell->STATES[fCaB_sl],
+        p_cell->STATES[xr],p_cell->STATES[xs],
+        p_cell->STATES[ikur_r], p_cell->STATES[s],
+        p_cell->STATES[i], p_cell->STATES[o],p_cell->STATES[ryr_r]
+      };
+      size_t n_row_values = sizeof(row_values) / sizeof(row_values[0]);
+      write_csv_time_series_row(fp_time_series, row_values, n_row_values);
 
       // schedule next output
       next_output_time += writing_step;
